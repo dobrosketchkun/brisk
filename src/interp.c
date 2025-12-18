@@ -651,6 +651,14 @@ void exec(Interpreter* interp, AstNode* node) {
         case NODE_BLOCK:
             exec_block(interp, node);
             break;
+        
+        case NODE_PROGRAM:
+            /* Execute all statements in the program */
+            for (int i = 0; i < node->as.program.statement_count; i++) {
+                exec(interp, node->as.program.statements[i]);
+                if (interp->had_error) break;
+            }
+            break;
             
         case NODE_IF:
             exec_if(interp, node);
@@ -762,7 +770,70 @@ void exec(Interpreter* interp, AstNode* node) {
             
         case NODE_IMPORT: {
             /* Execute @import */
-            const char* header_path = node->as.import.path;
+            const char* import_path = node->as.import.path;
+            size_t path_len = strlen(import_path);
+            
+            /* Check if it's a Brisk module (.brisk file) */
+            if (path_len > 6 && strcmp(import_path + path_len - 6, ".brisk") == 0) {
+                /* Import a Brisk module */
+                char resolved_path[512];
+                
+                /* Try relative to current file first, then current directory */
+                if (import_path[0] == '/' || import_path[0] == '.') {
+                    snprintf(resolved_path, sizeof(resolved_path), "%s", import_path);
+                } else {
+                    snprintf(resolved_path, sizeof(resolved_path), "./%s", import_path);
+                }
+                
+                /* Read the module file */
+                FILE* file = fopen(resolved_path, "rb");
+                if (!file) {
+                    /* Try lib/ directory */
+                    snprintf(resolved_path, sizeof(resolved_path), "lib/%s", import_path);
+                    file = fopen(resolved_path, "rb");
+                }
+                
+                if (!file) {
+                    runtime_error(interp, node->line, "Cannot find module '%s'", import_path);
+                    break;
+                }
+                
+                fseek(file, 0, SEEK_END);
+                long size = ftell(file);
+                rewind(file);
+                
+                char* source = mem_alloc(size + 1);
+                size_t read_size = fread(source, 1, size, file);
+                source[read_size] = '\0';
+                fclose(file);
+                
+                /* Parse the module */
+                Lexer lexer;
+                lexer_init(&lexer, source);
+                
+                Parser parser;
+                parser_init(&parser, &lexer);
+                
+                AstNode* module_ast = parse_program(&parser);
+                
+                if (parser.had_error || !module_ast) {
+                    runtime_error(interp, node->line, "Failed to parse module '%s'", import_path);
+                    mem_free(source, size + 1);
+                    break;
+                }
+                
+                /* Execute the module in the current global environment */
+                /* This makes all top-level definitions available */
+                exec(interp, module_ast);
+                
+                /* Note: We do NOT free module_ast or source here because
+                   ObjFunction stores pointers to the AST nodes.
+                   TODO: Implement proper module caching to manage this memory */
+                break;
+            }
+            
+            /* Otherwise, it's a C header */
+            const char* header_path = import_path;
             
             /* Find the header file */
             char* full_path = cheader_find_include(header_path, true);

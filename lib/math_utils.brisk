@@ -1,0 +1,33 @@
+# Math utilities module
+
+fn square(x) {
+    x * x
+}
+
+fn cube(x) {
+    x * x * x
+}
+
+fn clamp(value, min_val, max_val) {
+    if value < min_val {
+        min_val
+    } else {
+        if value > max_val {
+            max_val
+        } else {
+            value
+        }
+    }
+}
+
+fn lerp(a, b, t) {
+    a + (b - a) * t
+}
+
+fn is_even(n) {
+    n % 2 == 0
+}
+
+fn is_odd(n) {
+    n % 2 != 0
+}

@@ -1,0 +1,24 @@
+# Module import demo
+# Demonstrates importing Brisk modules
+
+println("=== Module Import Demo ===")
+println("")
+
+# Import the math utilities module
+@import "lib/math_utils.brisk"
+
+println("Imported math_utils.brisk")
+println("")
+
+# Use the imported functions
+println("square(5) =", square(5))
+println("cube(3) =", cube(3))
+println("clamp(15, 0, 10) =", clamp(15, 0, 10))
+println("clamp(-5, 0, 10) =", clamp(-5, 0, 10))
+println("lerp(0, 100, 0.5) =", lerp(0, 100, 0.5))
+println("is_even(4) =", is_even(4))
+println("is_even(7) =", is_even(7))
+println("is_odd(7) =", is_odd(7))
+
+println("")
+println("=== Module import successful! ===")
