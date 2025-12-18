@@ -1,0 +1,179 @@
+# Interpreter Integration Tests
+
+println("=== Brisk Interpreter Tests ===")
+println("")
+
+# Test counter
+passed := 0
+failed := 0
+
+fn test(name, condition) {
+    if condition {
+        println("✓ PASS:", name)
+        passed = passed + 1
+    } else {
+        println("✗ FAIL:", name)
+        failed = failed + 1
+    }
+}
+
+# Arithmetic
+test("Integer addition", 2 + 3 == 5)
+test("Integer subtraction", 10 - 4 == 6)
+test("Integer multiplication", 6 * 7 == 42)
+test("Integer division", 15 / 3 == 5)
+test("Integer modulo", 17 % 5 == 2)
+
+test("Float addition", 1.5 + 2.5 == 4.0)
+test("Float multiplication", 2.5 * 4.0 == 10.0)
+test("Mixed arithmetic", 10 + 0.5 == 10.5)
+
+test("Negative numbers", -5 + 3 == -2)
+test("Operator precedence", 2 + 3 * 4 == 14)
+test("Parentheses", (2 + 3) * 4 == 20)
+
+# Comparison
+test("Less than", 3 < 5)
+test("Greater than", 5 > 3)
+test("Less equal", 5 <= 5)
+test("Greater equal", 5 >= 5)
+test("Equal", 42 == 42)
+test("Not equal", 42 != 43)
+
+# Logical
+test("And true", true and true)
+test("And false", not (true and false))
+test("Or true", true or false)
+test("Or both false", not (false or false))
+test("Not", not false)
+
+# Strings
+test("String concat", "hello" + " " + "world" == "hello world")
+test("String length", len("hello") == 5)
+test("String index", "hello"[0] == "h")
+test("String upper", upper("hello") == "HELLO")
+test("String lower", lower("HELLO") == "hello")
+
+# Arrays
+arr := [1, 2, 3]
+test("Array length", len(arr) == 3)
+test("Array index", arr[1] == 2)
+push(arr, 4)
+test("Array push", len(arr) == 4)
+test("Array last", arr[3] == 4)
+popped := pop(arr)
+test("Array pop value", popped == 4)
+test("Array pop length", len(arr) == 3)
+
+# Tables
+tbl := { a: 1, b: 2 }
+test("Table field access", tbl.a == 1)
+test("Table bracket access", tbl["b"] == 2)
+tbl.c = 3
+test("Table field set", tbl.c == 3)
+test("Table has key", has(tbl, "a"))
+test("Table keys", len(keys(tbl)) == 3)
+
+# Control flow
+x := 0
+if true { x = 1 }
+test("If true branch", x == 1)
+
+x = 0
+if false { x = 1 } else { x = 2 }
+test("If else branch", x == 2)
+
+x = 0
+for i in 0..5 { x = x + i }
+test("For loop sum", x == 10)
+
+x = 0
+while x < 5 { x = x + 1 }
+test("While loop", x == 5)
+
+# Functions
+fn add(a, b) { a + b }
+test("Function call", add(3, 4) == 7)
+
+fn factorial(n) {
+    if n <= 1 { return 1 }
+    n * factorial(n - 1)
+}
+test("Recursive function", factorial(5) == 120)
+
+# Closures
+fn make_counter() {
+    count := 0
+    fn() {
+        count = count + 1
+        count
+    }
+}
+counter := make_counter()
+test("Closure call 1", counter() == 1)
+test("Closure call 2", counter() == 2)
+test("Closure call 3", counter() == 3)
+
+# Match
+fn match_test(x) {
+    match x {
+        1 => "one",
+        2 => "two",
+        _ => "other"
+    }
+}
+test("Match literal 1", match_test(1) == "one")
+test("Match literal 2", match_test(2) == "two")
+test("Match wildcard", match_test(99) == "other")
+
+# Math functions
+test("abs positive", abs(5) == 5)
+test("abs negative", abs(-5) == 5)
+test("sqrt", sqrt(16) == 4.0)
+test("pow", pow(2, 3) == 8.0)
+test("floor", floor(3.7) == 3)
+test("ceil", ceil(3.2) == 4)
+test("round", round(3.5) == 4)
+
+# Type functions
+test("type int", type(42) == "int")
+test("type float", type(3.14) == "float")
+test("type string", type("hello") == "string")
+test("type bool", type(true) == "bool")
+test("type array", type([1,2,3]) == "array")
+test("type table", type({a:1}) == "table")
+
+# Conversions
+test("int from float", int(3.7) == 3)
+test("float from int", float(5) == 5.0)
+test("str from int", str(42) == "42")
+test("bool truthy", bool(1) == true)
+test("bool falsy", bool(0) == false)
+
+# Break and continue
+total := 0
+for i in 0..10 {
+    if i == 5 { break }
+    total = total + i
+}
+test("Break in for", total == 10)  # 0+1+2+3+4
+
+total = 0
+for i in 0..10 {
+    if i % 2 == 0 { continue }
+    total = total + i
+}
+test("Continue in for", total == 25)  # 1+3+5+7+9
+
+# Results
+println("")
+println("=== Results ===")
+println("Passed:", passed)
+println("Failed:", failed)
+
+if failed > 0 {
+    println("Some tests failed!")
+    exit(1)
+}
+
+println("All tests passed!")

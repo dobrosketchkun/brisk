@@ -1,0 +1,147 @@
+# Brisk Language Feature Showcase
+
+println("=== Constants ===")
+PI :: 3.14159
+println("PI =", PI)
+
+println("")
+println("=== Arrays ===")
+arr := [1, 2, 3, 4, 5]
+println("Array:", arr)
+println("Length:", len(arr))
+println("First element:", arr[0])
+println("Last element:", arr[len(arr) - 1])
+
+push(arr, 6)
+println("After push(6):", arr)
+
+popped := pop(arr)
+println("Popped:", popped)
+println("After pop:", arr)
+
+println("")
+println("=== Tables (Maps) ===")
+person := {
+    name: "Alice",
+    age: 30,
+    city: "Wonderland"
+}
+println("Person:", person)
+println("Name:", person.name)
+println("Age:", person["age"])
+
+person.job = "Explorer"
+println("After adding job:", person)
+
+println("")
+println("=== Control Flow ===")
+x := 10
+
+if x > 5 {
+    println("x is greater than 5")
+} elif x == 5 {
+    println("x equals 5")
+} else {
+    println("x is less than 5")
+}
+
+println("")
+println("=== Loops ===")
+print("For loop: ")
+for i in 0..5 {
+    print(i, " ")
+}
+println("")
+
+count := 0
+print("While loop: ")
+while count < 5 {
+    print(count, " ")
+    count = count + 1
+}
+println("")
+
+println("")
+println("=== Functions ===")
+fn greet(name) {
+    "Hello, " + name + "!"
+}
+
+fn add(a, b) {
+    a + b
+}
+
+fn factorial(n) {
+    if n <= 1 { return 1 }
+    n * factorial(n - 1)
+}
+
+println(greet("Brisk"))
+println("add(3, 4) =", add(3, 4))
+println("factorial(5) =", factorial(5))
+
+println("")
+println("=== Anonymous Functions ===")
+double := fn(x) { x * 2 }
+println("double(21) =", double(21))
+
+numbers := [1, 2, 3, 4, 5]
+print("Doubled: ")
+for n in numbers {
+    print(double(n), " ")
+}
+println("")
+
+println("")
+println("=== Pattern Matching ===")
+fn describe(n) {
+    match n {
+        0 => "zero",
+        1 => "one",
+        2..10 => "small",
+        _ => "large"
+    }
+}
+
+println("describe(0) =", describe(0))
+println("describe(1) =", describe(1))
+println("describe(5) =", describe(5))
+println("describe(100) =", describe(100))
+
+println("")
+println("=== String Operations ===")
+s := "Hello, World!"
+println("Original:", s)
+println("Upper:", upper(s))
+println("Lower:", lower(s))
+println("Length:", len(s))
+println("Substring(0, 5):", substr(s, 0, 5))
+println("Find 'World':", find(s, "World"))
+println("Replace:", replace(s, "World", "Brisk"))
+
+words := split(s, ", ")
+println("Split:", words)
+println("Join:", join(words, " - "))
+
+println("")
+println("=== Math Functions ===")
+println("abs(-5) =", abs(-5))
+println("min(3, 7, 1) =", min(3, 7, 1))
+println("max(3, 7, 1) =", max(3, 7, 1))
+println("sqrt(16) =", sqrt(16))
+println("pow(2, 10) =", pow(2, 10))
+println("floor(3.7) =", floor(3.7))
+println("ceil(3.2) =", ceil(3.2))
+println("round(3.5) =", round(3.5))
+
+println("")
+println("=== Type Functions ===")
+println("type(42) =", type(42))
+println("type(3.14) =", type(3.14))
+println("type(\"hello\") =", type("hello"))
+println("type(true) =", type(true))
+println("type([1,2,3]) =", type([1,2,3]))
+println("type({a:1}) =", type({a:1}))
+
+println("")
+println("=== All features demonstrated! ===")

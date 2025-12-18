@@ -1,0 +1,16 @@
+# Hello World in Brisk
+
+println("Hello, Brisk!")
+
+# Variables
+name := "World"
+println("Hello, " + name + "!")
+
+# Numbers
+x := 42
+y := 3.14
+println("x =", x, ", y =", y)
+
+# Simple calculation
+println("x + 10 =", x + 10)
+println("y * 2 =", y * 2)

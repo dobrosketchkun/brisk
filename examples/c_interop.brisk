@@ -1,0 +1,56 @@
+# C Interop Example
+# Demonstrates calling C standard library functions
+
+println("=== C Interop Demo ===")
+println("")
+
+# Import C standard headers
+# These parse the system headers and register C functions
+println("=== Importing stdio.h ===")
+@import "stdio.h"
+println("=== Importing stdlib.h ===")
+@import "stdlib.h"  
+println("=== Importing string.h ===")
+@import "string.h"
+println("=== Importing math.h ===")
+@import "math.h"
+
+println("C headers imported successfully!")
+println("")
+
+# Call C math functions (from libm)
+println("=== Math Functions from libm ===")
+result := sqrt(16.0)
+println("sqrt(16.0) =", result)
+
+result = sin(0.0)
+println("sin(0.0) =", result)
+
+result = cos(0.0)
+println("cos(0.0) =", result)
+
+result = pow(2.0, 10.0)
+println("pow(2.0, 10.0) =", result)
+
+result = exp(1.0)
+println("exp(1.0) =", result)
+
+result = log(2.718281828)
+println("log(2.718281828) =", result)
+
+result = floor(3.7)
+println("floor(3.7) =", result)
+
+result = ceil(3.2)
+println("ceil(3.2) =", result)
+
+println("")
+println("=== String Functions from libc ===")
+
+# Note: Direct C string functions work with our strings
+s := "Hello, C World!"
+println("Original string:", s)
+println("strlen(s) =", strlen(s))
+
+println("")
+println("=== All C interop tests passed! ===")

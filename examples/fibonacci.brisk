@@ -1,0 +1,32 @@
+# Fibonacci sequence in Brisk
+
+fn fibonacci(n) {
+    if n <= 1 {
+        return n
+    }
+    fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+println("Fibonacci sequence:")
+for i in 0..15 {
+    println("fib(" + str(i) + ") =", fibonacci(i))
+}
+
+# Iterative version
+fn fibonacci_iter(n) {
+    if n <= 1 { return n }
+    
+    a := 0
+    b := 1
+    for i in 2..n+1 {
+        temp := a + b
+        a = b
+        b = temp
+    }
+    b
+}
+
+println("")
+println("Using iterative version:")
+println("fib(20) =", fibonacci_iter(20))
+println("fib(30) =", fibonacci_iter(30))
