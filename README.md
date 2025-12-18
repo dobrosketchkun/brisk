@@ -334,5 +334,4 @@ MIT License
 ## See Also
 
 - [LANGUAGE_GUIDE.md](LANGUAGE_GUIDE.md) - Comprehensive language documentation
-- [LANGUAGE_PLAN.md](LANGUAGE_PLAN.md) - Original design document
 - [examples/](examples/) - Example programs
