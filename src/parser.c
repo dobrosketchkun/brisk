@@ -185,6 +185,7 @@ static void init_rules(void) {
     /* Unary */
     rules[TOKEN_MINUS] = (ParseRule){parse_unary, parse_binary, PREC_TERM};
     rules[TOKEN_NOT] = (ParseRule){parse_unary, NULL, PREC_NONE};
+    rules[TOKEN_BANG] = (ParseRule){parse_unary, NULL, PREC_NONE};
     rules[TOKEN_AMPERSAND] = (ParseRule){parse_address_of, NULL, PREC_NONE};
     
     /* Binary operators */
@@ -245,7 +246,7 @@ static AstNode* parse_number(Parser* parser) {
         }
         buf[j] = '\0';
         
-        int64_t value = strtoll(buf, NULL, 10);
+        int64_t value = strtoll(buf, NULL, 0); /* 0 = auto-detect hex/octal/decimal */
         free(buf);
         return ast_int_literal(value, token.line, token.column);
     } else {

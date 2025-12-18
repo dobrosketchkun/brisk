@@ -1,0 +1,158 @@
+# Raylib Window Demo - Bouncing Shapes
+# Demonstrates Brisk's C FFI with the raylib graphics library
+#
+# To run:
+#   cd /path/to/interpreted_language_1
+#   LD_LIBRARY_PATH=./experiments/raylib/src ./brisk experiments/window_demo.brisk
+
+println("=== Brisk + Raylib Demo ===")
+
+# Import raylib header from our local lib folder
+@import "experiments/raylib_lib/raylib.h"
+
+println("Raylib imported successfully!")
+
+# Color constants (ABGR format for little-endian systems)
+DARK :: 0xFF1D1D1D
+MY_WHITE :: 0xFFFFFFFF
+MY_RED :: 0xFF0000FF
+MY_GREEN :: 0xFF00FF00
+MY_PURPLE :: 0xFFFF00FF
+MY_CYAN :: 0xFFFFFF00
+
+# Window dimensions
+WIDTH :: 800
+HEIGHT :: 600
+
+# Rectangle properties
+rect_x := 50
+rect_y := 300
+rect_w :: 80
+rect_h :: 60
+rect_vx := 4
+rect_vy := 3
+
+# Circle properties
+circ_x := 600
+circ_y := 200
+circ_r :: 40
+circ_vx := -5
+circ_vy := 4
+
+# Initialize window
+InitWindow(WIDTH, HEIGHT, "Brisk Raylib Speedrun")
+SetTargetFPS(60)
+
+println("Window created! Press ESC to close.")
+
+# Main game loop
+while !WindowShouldClose() {
+    # Update rectangle position
+    rect_x = rect_x + rect_vx
+    rect_y = rect_y + rect_vy
+    
+    # Bounce rectangle off walls
+    if rect_x < 0 {
+        rect_x = 0
+        rect_vx = 0 - rect_vx
+    }
+    if rect_x + rect_w > WIDTH {
+        rect_x = WIDTH - rect_w
+        rect_vx = 0 - rect_vx
+    }
+    if rect_y < 0 {
+        rect_y = 0
+        rect_vy = 0 - rect_vy
+    }
+    if rect_y + rect_h > HEIGHT {
+        rect_y = HEIGHT - rect_h
+        rect_vy = 0 - rect_vy
+    }
+    
+    # Update circle position
+    circ_x = circ_x + circ_vx
+    circ_y = circ_y + circ_vy
+    
+    # Bounce circle off walls
+    if circ_x - circ_r < 0 {
+        circ_x = circ_r
+        circ_vx = 0 - circ_vx
+    }
+    if circ_x + circ_r > WIDTH {
+        circ_x = WIDTH - circ_r
+        circ_vx = 0 - circ_vx
+    }
+    if circ_y - circ_r < 0 {
+        circ_y = circ_r
+        circ_vy = 0 - circ_vy
+    }
+    if circ_y + circ_r > HEIGHT {
+        circ_y = HEIGHT - circ_r
+        circ_vy = 0 - circ_vy
+    }
+    
+    # Circle-Rectangle collision detection
+    # Find closest point on rectangle to circle center
+    closest_x := circ_x
+    closest_y := circ_y
+    
+    if circ_x < rect_x {
+        closest_x = rect_x
+    }
+    if circ_x > rect_x + rect_w {
+        closest_x = rect_x + rect_w
+    }
+    if circ_y < rect_y {
+        closest_y = rect_y
+    }
+    if circ_y > rect_y + rect_h {
+        closest_y = rect_y + rect_h
+    }
+    
+    # Calculate distance squared (avoid sqrt)
+    dx := circ_x - closest_x
+    dy := circ_y - closest_y
+    dist_sq := dx * dx + dy * dy
+    
+    # Check collision
+    if dist_sq < circ_r * circ_r {
+        # Swap velocities for bouncing effect
+        temp_vx := rect_vx
+        temp_vy := rect_vy
+        rect_vx = circ_vx
+        rect_vy = circ_vy
+        circ_vx = temp_vx
+        circ_vy = temp_vy
+        
+        # Separate them to prevent sticking
+        # Push circle away from rectangle center
+        rect_cx := rect_x + rect_w / 2
+        rect_cy := rect_y + rect_h / 2
+        
+        if circ_x < rect_cx {
+            circ_x = circ_x - 5
+        } else {
+            circ_x = circ_x + 5
+        }
+        if circ_y < rect_cy {
+            circ_y = circ_y - 5
+        } else {
+            circ_y = circ_y + 5
+        }
+    }
+    
+    # Draw
+    BeginDrawing()
+    ClearBackground(DARK)
+    
+    DrawText("Brisk Raylib Speedrun", 220, 20, 30, MY_WHITE)
+    DrawText("Bouncing Shapes Demo", 280, 60, 20, MY_CYAN)
+    
+    DrawRectangle(rect_x, rect_y, rect_w, rect_h, MY_GREEN)
+    DrawCircle(circ_x, circ_y, circ_r, MY_PURPLE)
+    
+    EndDrawing()
+}
+
+CloseWindow()
+println("Demo complete!")

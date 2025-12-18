@@ -444,6 +444,7 @@ static Value eval_unary(Interpreter* interp, AstNode* node) {
             return NIL_VAL;
             
         case TOKEN_NOT:
+        case TOKEN_BANG:
             return BOOL_VAL(!value_is_truthy(operand));
             
         default:
@@ -861,6 +862,16 @@ void exec(Interpreter* interp, AstNode* node) {
             if (strstr(header_path, "math.h")) {
                 LibHandle libm = lib_open("m");
                 if (libm) lib = libm;
+            }
+            /* raylib -> libraylib.so */
+            if (strstr(header_path, "raylib")) {
+                /* Try common locations for raylib */
+                LibHandle raylib = lib_open("raylib");
+                if (!raylib) raylib = lib_open("./experiments/raylib_lib/libraylib.so");
+                if (!raylib) raylib = lib_open("experiments/raylib_lib/libraylib.so");
+                if (!raylib) raylib = lib_open("./experiments/raylib/src/libraylib.so");
+                if (!raylib) raylib = lib_open("./libraylib.so");
+                if (raylib) lib = raylib;
             }
             
             /* Register declarations */

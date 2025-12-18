@@ -71,10 +71,35 @@ static char* read_ident(CHeaderParser* p) {
 static void skip_parens(CHeaderParser* p);
 static void skip_gnu_extension(CHeaderParser* p);
 
+/* Skip common API/calling convention prefixes */
+static void skip_api_prefix(CHeaderParser* p) {
+    skip_space(p);
+    /* Common API prefixes that can be skipped */
+    static const char* api_prefixes[] = {
+        "RLAPI", "WINAPI", "APIENTRY", "GLAPI", "GLAPIENTRY",
+        "WINGDIAPI", "CALLBACK", "PASCAL", "__stdcall", "__cdecl",
+        "__fastcall", "extern", "EXTERN", NULL
+    };
+    
+    for (int i = 0; api_prefixes[i]; i++) {
+        int len = strlen(api_prefixes[i]);
+        if (strncmp(p->current, api_prefixes[i], len) == 0 &&
+            !IS_ALNUM(p->current[len]) && p->current[len] != '_') {
+            p->current += len;
+            skip_space(p);
+            skip_gnu_extension(p);
+            /* Recursively check for more prefixes */
+            skip_api_prefix(p);
+            return;
+        }
+    }
+}
+
 /* Read C type (simplified) */
 static CType read_type(CHeaderParser* p, char** type_str) {
     skip_space(p);
     skip_gnu_extension(p);
+    skip_api_prefix(p);
     
     char buffer[256] = {0};
     int buf_len = 0;

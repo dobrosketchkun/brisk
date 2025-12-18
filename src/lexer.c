@@ -159,7 +159,26 @@ static bool is_alnum(char c) {
     return is_alpha(c) || is_digit(c);
 }
 
+static bool is_hex_digit(char c) {
+    return is_digit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
 static Token scan_number(Lexer* lexer) {
+    /* Check for hex number: 0x... */
+    if (lexer->current - lexer->start == 1 && 
+        lexer->start[0] == '0' && 
+        (peek(lexer) == 'x' || peek(lexer) == 'X')) {
+        advance(lexer); /* Consume 'x' */
+        while (is_hex_digit(peek(lexer)) || peek(lexer) == '_') {
+            if (peek(lexer) == '_') {
+                advance(lexer);
+                continue;
+            }
+            advance(lexer);
+        }
+        return make_token(lexer, TOKEN_INT);
+    }
+    
     /* Consume leading digits */
     while (is_digit(peek(lexer)) || peek(lexer) == '_') {
         if (peek(lexer) == '_') {
