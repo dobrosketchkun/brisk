@@ -1,3 +1,12 @@
+# Prelude
+
+This is just an experiment about creating a programming language from scratch with AI. The idea is to create a plan with it and give it a go without interfering. Obviously, at a later stage, it should be guided by tests, results, and capslock swearing and such, but otherwise - it's fully AI slop as it is.
+
+And since mister Tsoding will surely never come here, I've already made a raylib speedrun.
+
+---
+---
+
 # Brisk
 
 A minimal interpreted language with **seamless C interoperability**.
