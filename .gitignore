@@ -1,4 +1,4 @@
 test_lexer
 test_parser
 build/*
-
+.ignore/
