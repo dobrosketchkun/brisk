@@ -854,24 +854,56 @@ void exec(Interpreter* interp, AstNode* node) {
                 break;
             }
             
-            /* Get library handle */
+            /* Get library handle - automatic discovery based on header path */
             LibHandle lib = lib_open(NULL);
             
-            /* Try to find associated library */
-            /* math.h -> libm */
-            if (strstr(header_path, "math.h")) {
-                LibHandle libm = lib_open("m");
-                if (libm) lib = libm;
+            /* Extract directory and base name from header path */
+            char header_dir[512] = {0};
+            char header_base[256] = {0};
+            
+            /* Find last slash to get directory */
+            const char* last_slash = strrchr(full_path, '/');
+            if (last_slash) {
+                int dir_len = last_slash - full_path;
+                strncpy(header_dir, full_path, dir_len);
+                header_dir[dir_len] = '\0';
+                strncpy(header_base, last_slash + 1, sizeof(header_base) - 1);
+            } else {
+                strcpy(header_dir, ".");
+                strncpy(header_base, full_path, sizeof(header_base) - 1);
             }
-            /* raylib -> libraylib.so */
-            if (strstr(header_path, "raylib")) {
-                /* Try common locations for raylib */
-                LibHandle raylib = lib_open("raylib");
-                if (!raylib) raylib = lib_open("./experiments/raylib_lib/libraylib.so");
-                if (!raylib) raylib = lib_open("experiments/raylib_lib/libraylib.so");
-                if (!raylib) raylib = lib_open("./experiments/raylib/src/libraylib.so");
-                if (!raylib) raylib = lib_open("./libraylib.so");
-                if (raylib) lib = raylib;
+            
+            /* Remove .h extension to get library name */
+            char lib_name[256] = {0};
+            strncpy(lib_name, header_base, sizeof(lib_name) - 1);
+            char* dot = strrchr(lib_name, '.');
+            if (dot) *dot = '\0';
+            
+            /* Try to find library in same directory as header */
+            char lib_path[768];
+            
+            /* Try: header_dir/lib<name>.so */
+            snprintf(lib_path, sizeof(lib_path), "%s/lib%s.so", header_dir, lib_name);
+            LibHandle found_lib = lib_open(lib_path);
+            
+            /* Try: header_dir/<name>.so */
+            if (!found_lib) {
+                snprintf(lib_path, sizeof(lib_path), "%s/%s.so", header_dir, lib_name);
+                found_lib = lib_open(lib_path);
+            }
+            
+            /* Try system library: lib<name> */
+            if (!found_lib) {
+                found_lib = lib_open(lib_name);
+            }
+            
+            /* Special case for standard headers */
+            if (!found_lib && strstr(header_path, "math.h")) {
+                found_lib = lib_open("m");
+            }
+            
+            if (found_lib) {
+                lib = found_lib;
             }
             
             /* Register declarations */
